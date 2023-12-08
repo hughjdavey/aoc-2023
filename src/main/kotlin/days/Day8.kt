@@ -1,5 +1,7 @@
 package days
 
+import kotlin.math.max
+
 class Day8 : Day(8) {
 
     private val instructions = getInstructions(inputString.takeWhile { it == 'L' || it == 'R' })
@@ -23,11 +25,26 @@ class Day8 : Day(8) {
     fun navigateGhostSteps(instructions: Sequence<Char> = this.instructions, network: List<Node> = this.network): Long {
         val startNodes = network.filter { it.name.endsWith('A') }
         val cycles = startNodes.map { countSteps(instructions, network, it) { name -> name.endsWith('Z') } }
-        val highest = cycles.max()
-        val others = cycles.filterNot { it == highest }
-        return generateSequence(highest) { it + highest }.find {
-            others.all { cycle -> it % cycle == 0L }
-        } ?: 0L
+        return lowestCommonMultiple(cycles)
+    }
+
+    // implementation inspired by https://www.baeldung.com/kotlin/lcm
+    private fun lowestCommonMultiple(numbers: List<Long>): Long {
+        return numbers.reduce { result, number -> lowestCommonMultiple(result, number) }
+    }
+
+    // implementation inspired by https://www.baeldung.com/kotlin/lcm
+    private fun lowestCommonMultiple(a: Long, b: Long): Long {
+        val maxNumber = max(a, b)
+        val maxLcm = a * b
+        var lcm = maxNumber
+        while (lcm <= maxLcm) {
+            if (lcm % a == 0L && lcm % b == 0L) {
+                return lcm
+            }
+            lcm += maxNumber
+        }
+        return maxLcm
     }
 
     private fun countSteps(instructions: Sequence<Char> = this.instructions, network: List<Node> = this.network, startNode: Node, isTargetName: (String) -> Boolean): Long {
