@@ -6,3 +6,6 @@ out/
 # Gradle
 .gradle
 build/
+
+# Inputs (see https://adventofcode.com/about#faq_copying and https://www.reddit.com/r/adventofcode/wiki/faqs/copyright/inputs)
+src/main/resources/input_day_*.txt
